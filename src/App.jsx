@@ -145,8 +145,7 @@ function PoolsCard({ data }) {
   // const sprout = vp?.sprout;
   // const sapling = vp?.sapling;
   // const orchard = vp?.orchard;
-  const lockbox = vp?.lockbox;
-  const treasury = lockbox * data?.priceUsd;
+  
   const totalChain = vp?.totalChain;
   const circulating = Number.isFinite(data?.circulatingSupply)
     ? data.circulatingSupply
@@ -157,8 +156,8 @@ function PoolsCard({ data }) {
 
   return (
     <section className="card pools-card">
-      <div className="circulating-line">Circulating Supply:</div>
-      <div className="highlight">
+      <div className="label highlight">Circulating Supply:</div>
+      <div className="highlight-supply">
         {fmtNumber(circulating, 4)} ZEC of <span className="circulating-highlight-accent">21.000.000 ZEC</span>
       </div>
 
@@ -190,33 +189,52 @@ function PoolsCard({ data }) {
             {fmtNumber(orchard, 4)} ZEC
           </span>
         </div> */}
-        <div className="pool-chip">
+        {/* <div className="pool-chip">
           <span className="pool-chip-label">Lockbox</span>
           <span className="pool-chip-value">
             {fmtNumber(lockbox, 4)} ZEC
           </span>
         </div>
         <div className="pool-chip">
-          <span className="pool-chip-label">Zcash Treasury</span>
+          <span className="pool-chip-label">Lockbox USD</span>
           <span className="pool-chip-value">
             {fmtNumber(treasury, 2)} USD
           </span>
-        </div>
+        </div> */}
       </div>
     </section>
   );
 }
 
-function MempoolCard({ data }) {
+// function MempoolCard({ data }) {
+//   return (
+//     <section className="card">
+//       <div className="label">Mempool</div>
+//       <div className="value main-number">
+//         {Number.isFinite(data?.mempoolSize)
+//           ? data.mempoolSize
+//           : "--"}
+//       </div>
+//       <div className="sub">transactions waiting</div>
+//     </section>
+//   );
+// }
+
+function LockboxCard({ data }) {
+  const vp = data?.valuePools ?? {};
+  const lockbox = vp?.lockbox;
+  const treasury = lockbox * data?.priceUsd;
   return (
     <section className="card">
-      <div className="label">Mempool</div>
+      <div className="label">Lockbox</div>
       <div className="value main-number">
-        {Number.isFinite(data?.mempoolSize)
-          ? data.mempoolSize
-          : "--"}
+        {fmtNumber(lockbox, 4)}  <span className="main-number-unit">ZEC</span>
       </div>
-      <div className="sub">transactions waiting</div>
+      <div className="label">USD Value</div>
+      <div className="value main-number">
+        {fmtUsd(treasury)} <span className="main-number-unit">USD</span>
+      </div>
+      
     </section>
   );
 }
@@ -226,9 +244,16 @@ function HeightCard({ data }) {
     <section className="card">
       <div className="label">Block Height</div>
       <div className="value main-number">
-        {fmtNumber(data?.height, 0)}
+        {fmtNumber(data?.height, 0)} <span className="main-number-unit">Latest chain tip</span>
+      </div>      
+      
+      <div className="label">Mempool</div>
+      <div className="value main-number">
+        {Number.isFinite(data?.mempoolSize)
+          ? data.mempoolSize
+          : "--"} <span className="main-number-unit">tx waiting</span>
       </div>
-      <div className="sub">Latest chain tip</div>
+      {/* <div className="sub">transactions waiting</div> */}
     </section>
   );
 }
@@ -247,7 +272,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header desktop-phone">
-        <div className="brand">ZCASH • <span>PRIVACY IS NORMAL</span></div>
+        <div className="brand">ZCASH ᙇ <span>PRIVACY IS NORMAL</span></div>
         <div className="clock">
           <span>{timeStr}</span>
           <span className="date">{dateStr}</span>
@@ -261,7 +286,8 @@ export default function App() {
         </div>
 
         <div className="bottom-grid">
-          <MempoolCard data={data} />
+          <LockboxCard data={data} />
+          {/* <MempoolCard data={data} /> */}
           <HeightCard data={data} />
         </div>
       </main>
