@@ -140,19 +140,28 @@ function PriceCard({ data }) {
 }
 
 function PoolsCard({ data }) {
-  const vp = data?.valuePools;
+  const vp = data?.valuePools ?? {};
   const shielded = vp?.shielded;
-  const sprout = vp?.sprout;
-  const sapling = vp?.sapling;
-  const orchard = vp?.orchard;
+  // const sprout = vp?.sprout;
+  // const sapling = vp?.sapling;
+  // const orchard = vp?.orchard;
   const lockbox = vp?.lockbox;
+  const treasury = lockbox * data?.priceUsd;
   const totalChain = vp?.totalChain;
+  const circulating = Number.isFinite(data?.circulatingSupply)
+    ? data.circulatingSupply
+    : totalChain;
   const shieldedPct = Number.isFinite(shielded) && Number.isFinite(totalChain) && totalChain > 0
     ? (shielded / totalChain) * 100
     : null;
 
   return (
     <section className="card pools-card">
+      <div className="circulating-line">Circulating Supply:</div>
+      <div className="highlight">
+        {fmtNumber(circulating, 4)} ZEC of <span className="circulating-highlight-accent">21.000.000 ZEC</span>
+      </div>
+
       <div className="label">Shielded Supply</div>
       <div className="value main-number">
         {fmtNumber(shielded, 4)} <span className="unit">ZEC</span>
@@ -163,7 +172,7 @@ function PoolsCard({ data }) {
         </div>
       )}
       <div className="pool-chips desktop-phone">
-        <div className="pool-chip">
+        {/* <div className="pool-chip">
           <span className="pool-chip-label">Sprout</span>
           <span className="pool-chip-value">
             {fmtNumber(sprout, 4)} ZEC
@@ -180,11 +189,17 @@ function PoolsCard({ data }) {
           <span className="pool-chip-value">
             {fmtNumber(orchard, 4)} ZEC
           </span>
-        </div>
+        </div> */}
         <div className="pool-chip">
           <span className="pool-chip-label">Lockbox</span>
           <span className="pool-chip-value">
             {fmtNumber(lockbox, 4)} ZEC
+          </span>
+        </div>
+        <div className="pool-chip">
+          <span className="pool-chip-label">Zcash Treasury</span>
+          <span className="pool-chip-value">
+            {fmtNumber(treasury, 2)} USD
           </span>
         </div>
       </div>

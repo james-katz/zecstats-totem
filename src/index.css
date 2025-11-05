@@ -111,11 +111,11 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--accent);
-  margin-bottom: 0.6rem;
+  /* margin-bottom: 0.6rem; */
 }
 
 .value {
-  font-size: clamp(2.2rem, 3.8vw, 3.6rem);
+  font-size: clamp(2.2rem, 2.8vw, 2.6rem);
   font-weight: 800;
 }
 .value .unit {
@@ -168,7 +168,7 @@ body {
 }
 
 .sub {
-  margin-top: 0.6rem;
+  margin-top: 0.2rem;
   font-size: clamp(0.95rem, 1.2vw, 1.25rem);
   color: var(--muted);
 }
@@ -178,6 +178,23 @@ body {
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+.circulating-line {
+  font-size: clamp(0.85rem, 1vw, 1.1rem);
+  color: var(--accent);  
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.4rem;
+}
+
+.circulating-highlight {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.circulating-highlight-accent {
+  color: var(--accent);  
 }
 
 .good {
@@ -201,7 +218,7 @@ body {
 }
 
 .pool-chips {
-  margin-top: 1.5rem;
+  margin-top: 0.1rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1.05rem;
@@ -210,7 +227,7 @@ body {
 .pool-chip {
   border: 2px solid rgba(244, 197, 66, 0.45);
   border-radius: 18px;
-  padding: 1rem 1.4rem;
+  padding: 1rem 1.2rem;
   background: rgba(244, 197, 66, 0.08);
   display: flex;
   flex-direction: column;
@@ -296,6 +313,13 @@ body {
 
   .market-cap-block {
     margin-top: 0.65rem;
+  }
+
+  .circulating-line {
+    display: none;
+  }
+  .highlight {
+    display: none;
   }
 }
 
