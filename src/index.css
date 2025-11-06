@@ -1,6 +1,7 @@
 :root {
   --bg: #000;
-  --fg: #fefefe;
+  /* --fg: #fefefe; */
+  --fg: #cfffcf;
   --muted: #888;
   --accent: #f4c542;
   --good: #00ff99;
@@ -82,8 +83,8 @@ body {
   background-color: rgba(18, 16, 16, 0.1);
   background-image: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(244, 183, 40, 0.12) 20%,
+    rgba(255, 255, 255, 0) 0%,    
+    rgba(200, 255, 200, 0.12) 20%,
     rgba(0, 0, 0, 0.08) 100%
   );
   background-repeat: no-repeat;
@@ -249,10 +250,6 @@ body {
   color: var(--muted);
 }
 
-.main-number {
-  text-shadow: 0 0 15px rgba(244, 197, 66, 0.25);
-}
-
 .main-number-unit {
   display: inline;
   margin-top: 0.2rem;
@@ -332,7 +329,7 @@ body {
 }
 
 .highlight-supply {
-  text-shadow: 0 0 15px rgba(244, 197, 66, 0.25);
+  /* text-shadow: 0 0 15px rgba(244, 197, 66, 0.25); */
   font-size: clamp(1.4rem, 1.8vw, 2.0rem);
   margin-bottom: 1.4rem;  
 }
