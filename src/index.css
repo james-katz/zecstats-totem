@@ -22,6 +22,17 @@ body,
   overflow: hidden;
 }
 
+@media (max-width: 600px) {
+  html,
+  body,
+  #root {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
 body {
   font-family: "Share Tech Mono", ui-monospace, SFMono-Regular, Menlo,
     Consolas, "Liberation Mono", monospace;
@@ -639,13 +650,15 @@ body {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   body {
     background: #000;
   }
 
   .app {
-    padding: 0;
+    height: auto;
+    min-height: 100vh;
+    padding: 0.75rem 1rem 1.75rem;
   }
 
   .app-header {
@@ -653,65 +666,129 @@ body {
   }
 
   .layout {
-    height: 100vh;
-    gap: 0;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    overflow: visible;
+    min-height: auto;
+    padding-bottom: 1.5rem;
   }
 
   .top-grid,
   .bottom-grid {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
+    min-height: auto;
   }
 
   .bottom-grid {
-    display: none;
+    display: flex;
   }
 
   .card {
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-    padding: 1.2rem 1rem;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
-
-  .price-card {
-    border-bottom: 2px solid #111;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 1.1rem 1rem 1.3rem;
+    border-radius: 16px;
+    border: 1px solid rgba(21, 21, 21, 0.9);
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.55);
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+    overflow: visible;
   }
 
   .label {
-    font-size: 1.3rem;
+    font-size: clamp(0.95rem, 4vw, 1.25rem);
   }
 
   .value {
-    font-size: 4rem;
-    text-align: center;
+    font-size: clamp(1.85rem, 9.5vw, 3.1rem);
+    text-align: left;
   }
 
   .sub,
-  .pools-line {
-    font-size: 0.95rem;
-  }
-
-  .mobile-only {
-    display: none;
-  }
-
-  .pool-chips {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 0.75rem;
-    padding: 0 1rem;
-  }
-
-  .market-cap-block {
-    margin-top: 0.5rem;
+  .shielded-share,
+  .tiny {
+    font-size: clamp(0.85rem, 3.5vw, 1.1rem);
   }
 
   .market-cap-value {
-    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: clamp(1.05rem, 6vw, 1.6rem);
+  }
+
+  .market-cap-change,
+  .market-cap-delta {
+    font-size: clamp(0.8rem, 3.3vw, 1rem);
+  }
+
+  .pool-chips {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .pool-chip {
+    padding: 0.9rem 1rem;
+  }
+
+  .highlight,
+  .highlight-supply,
+  .circulating-line {
+    font-size: clamp(0.9rem, 3.8vw, 1.2rem);
+  }
+
+  .mobile-only {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  html,
+  body,
+  #root {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .app {
+    height: auto;
+    min-height: 100vh;
+    padding: 0.75rem 1.25rem 1.75rem;
+  }
+
+  .app-header {
+    display: none;
+  }
+
+  .layout {
+    flex: none;
+    gap: 1rem;
+    overflow: visible;
+    padding-bottom: 1.25rem;
+  }
+
+  .top-grid,
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    grid-auto-rows: minmax(0, 1fr);
+  }
+
+  .bottom-grid {
+    display: grid;
+  }
+
+  .card {
+    height: auto;
+    min-height: 0;
   }
 }
 
