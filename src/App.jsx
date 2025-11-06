@@ -261,6 +261,7 @@ function HeightCard({ data }) {
 export default function App() {
   const now = useClock();
   const { data } = useStatus();
+  const [crtEnabled, setCrtEnabled] = useState(true);
 
   const timeStr = now.toLocaleTimeString([], {
     hour: "2-digit",
@@ -270,12 +271,28 @@ export default function App() {
   const dateStr = now.toLocaleDateString();
 
   return (
-    <div className="app">
+    <div className={`app${crtEnabled ? " crt-on" : ""}`}>
       <header className="app-header desktop-phone">
         <div className="brand">ZCASH ᙇ <span>PRIVACY IS NORMAL</span></div>
-        <div className="clock">
-          <span>{timeStr}</span>
-          <span className="date">{dateStr}</span>
+        <div className="header-controls">
+          <button
+            type="button"
+            className={`crt-toggle${crtEnabled ? " is-active" : ""}`}
+            onClick={() => setCrtEnabled((prev) => !prev)}
+            role="switch"
+            aria-checked={crtEnabled}
+          >
+            <span className="crt-toggle-track" aria-hidden="true">
+              <span className="crt-toggle-thumb" />
+            </span>
+            <span className="crt-toggle-label">
+              {crtEnabled ? "CRT ON" : "CRT OFF"}
+            </span>
+          </button>
+          <div className="clock">
+            <span>{timeStr}</span>
+            <span className="date">{dateStr}</span>
+          </div>
         </div>
       </header>
 
