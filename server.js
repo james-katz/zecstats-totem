@@ -14,24 +14,58 @@ const INFO_URL =
   "https://mainnet.zcashexplorer.app/api/v1/blockchain-info";
 const MEMPOOL_URL = "https://zcashmetro.io:3000/mempool";
 const PRICE_CACHE_TTL_MS = Number(process.env.PRICE_CACHE_TTL_MS ?? 60_000);
+const REQUEST_TIMEOUT_MS = Number(process.env.REQUEST_TIMEOUT_MS ?? 30_000);
+const REQUEST_RETRIES = Number(process.env.REQUEST_RETRIES ?? 2);
+const REQUEST_RETRY_DELAY_MS = Number(
+  process.env.REQUEST_RETRY_DELAY_MS ?? 1_000
+);
 
 const MEMPOOL_AGENT = new https.Agent({ rejectUnauthorized: false });
+const RETRYABLE_ERROR_CODES = new Set([
+  "ECONNABORTED",
+  "ETIMEDOUT",
+  "ECONNRESET",
+  "EPIPE",
+  "EHOSTUNREACH",
+  "ENETUNREACH",
+  "EAI_AGAIN",
+]);
 
 async function getJSON(url, config = {}) {
-  try {
-    const res = await axios.get(url, {
-      headers: {
-        accept: "application/json",
-        "user-agent": "zcash-totem/1.0",
-        ...config.headers,
-      },
-      timeout: config.timeout ?? 15_000,
-      httpsAgent: config.httpsAgent,
-    });
-    return normalizeJSON(res.data);
-  } catch (err) {
-    const status = err.response?.status ?? err.code ?? "request_failed";
-    throw new Error(`${url} -> HTTP ${status}`);
+  const {
+    headers,
+    timeout,
+    httpsAgent,
+    retries = REQUEST_RETRIES,
+    retryDelayMs = REQUEST_RETRY_DELAY_MS,
+  } = config;
+
+  const axiosConfig = {
+    headers: {
+      accept: "application/json",
+      "user-agent": "zcash-totem/1.0",
+      ...headers,
+    },
+    timeout: timeout ?? REQUEST_TIMEOUT_MS,
+    httpsAgent,
+  };
+
+  let attempt = 0;
+  while (attempt <= retries) {
+    try {
+      const res = await axios.get(url, axiosConfig);
+      return normalizeJSON(res.data);
+    } catch (err) {
+      attempt += 1;
+      const status = err.response?.status ?? err.code ?? "request_failed";
+      const retryable = isRetryableError(err);
+      if (!retryable || attempt > retries) {
+        throw new Error(`${url} -> HTTP ${status}`);
+      }
+      const delayMs = retryDelayMs * attempt;
+      console.warn(`request retry ${attempt}/${retries} for ${url} (${status})`);
+      await delay(delayMs);
+    }
   }
 }
 
@@ -109,6 +143,19 @@ function extractValuePools(info, circulatingSupply) {
   };
 }
 
+function isRetryableError(err) {
+  const statusCode = err.response?.status ?? null;
+  if (typeof statusCode === "number") {
+    return statusCode === 429 || statusCode >= 500;
+  }
+  const code = err.code ?? "";
+  return RETRYABLE_ERROR_CODES.has(code);
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 app.get("/api/status", async (req, res) => {
   try {
     const pricePromise = getCachedPriceData();
@@ -149,14 +196,12 @@ app.get("/api/status", async (req, res) => {
 
     const pools = extractValuePools(infoData, circulatingSupply);
     
-    let mempoolSize = 0;
+    let mempoolSize = null;
     if (Array.isArray(mempoolData)) {
-      mempoolSize = mempoolData.length;
+      mempoolSize = sanitizeNumber(mempoolData.length);
     } else if (mempoolData && typeof mempoolData === "object") {
-      mempoolSize =
-        mempoolData.size ??
-        mempoolData.length ??
-        0;
+      const candidate = mempoolData.size ?? mempoolData.length ?? null;
+      mempoolSize = sanitizeNumber(candidate);
     }
 
     res.json({
