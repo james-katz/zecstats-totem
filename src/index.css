@@ -268,11 +268,171 @@ body {
   color: var(--muted);
 }
 
+.mobile-only {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .card {
+    padding: clamp(1.45rem, 2.6vh, 2.3rem) clamp(1.8rem, 1.8vw, 2.5rem);
+    gap: clamp(0.75rem, 1.2vh, 1.3rem);
+    justify-content: space-between;
+  }
+
+  .card .label {
+    margin-bottom: 0.25rem;
+  }
+
+  .card .value {
+    margin-top: 0.1rem;
+  }
+}
+
 .market-cap-block {
   margin-top: 0.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat-block + .stat-block {
+  margin-top: 0.4rem;
+}
+
+.supply-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.supply-progress-label {
+  font-size: clamp(1.3rem, 1vw, 1.05rem);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.supply-progress-bar {
+  position: relative;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+  overflow: hidden;
+  box-shadow: 0 0 14px rgba(244, 197, 66, 0.1) inset, 0 0 12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.supply-progress-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #f4c542, #ff8c2b);
+  box-shadow: 0 0 12px rgba(244, 197, 66, 0.55);
+}
+
+.value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.range-line {
+  margin-top: -0.15rem;
+}
+
+.value-sub {
+  font-size: clamp(1.05rem, 1.2vw, 1.5rem);
+  color: var(--text);
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.unit-sub {
+  font-size: 0.75em;
+  color: var(--muted);
+  margin-left: 0.2rem;
+}
+
+.holdings-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.holdings-grid .stat-block {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  justify-content: flex-start;
+}
+
+.holdings-grid .stat-spacer {
+  flex: 1 1 auto;
+}
+
+.holdings-grid .main-number {
+  font-size: clamp(1.6rem, 2vw, 2.2rem);
+  white-space: nowrap;
+}
+
+.holdings-grid .main-number .main-number-unit {
+  font-size: clamp(0.85rem, 1vw, 1.1rem);
+}
+
+.holdings-grid .value-sub {
+  font-size: clamp(0.95rem, 1.1vw, 1.25rem);
+}
+
+.holding-progress {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.holding-progress-label {
+  font-size: clamp(0.78rem, 0.9vw, 0.95rem);
+  color: var(--text);
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.holding-progress-pct {
+  font-size: clamp(1rem, 1.2vw, 1.35rem);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.holding-progress-rest {
+  color: var(--muted);
+  margin-left: 0.5rem;
+}
+
+.holding-progress-bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5) inset;
+}
+
+.holding-progress-fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #f4c542, #ff8c2b);
+  box-shadow: 0 0 8px rgba(244, 197, 66, 0.35);
 }
 
 .market-cap-label {
