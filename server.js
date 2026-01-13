@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import axios from "axios";
 import https from "https";
+import config from "./config.json" with { type: "json" };
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -94,9 +95,10 @@ const treasuryCache = {
   promise: null,
 };
 
+// Grayscale site config, setup by Pac on Jan 10th at 15:01
 const staticGrayscale = {
-  sharesOutstanding: 4_829_300,
-  zecPerShare: 0.08167081,
+  sharesOutstanding: config.grayscale.sharesOutstanding,
+  zecPerShare: config.grayscale.zecPerShare,
 };
 
 function getCachedPriceData() {
