@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import axios from "axios";
+import { toPng } from "html-to-image";
+import { FiCamera, FiDownload } from "react-icons/fi";
 
 const PRICE_REFRESH_MS = 30_000;
 const MEMPOOL_REFRESH_MS = 10_000;
@@ -93,7 +95,71 @@ function fmtPercent(x, digits = 2) {
   return `${x > 0 ? "+" : x < 0 ? "-" : ""}${abs}%`;
 }
 
-function PriceCard({ data }) {
+/* ─── PNG export helper ─── */
+async function exportToPng(node, filename, appEl) {
+  if (!node) return;
+
+  // Strip CRT effect during capture
+  const hadCrt = appEl?.classList.contains("crt-on");
+  if (hadCrt) appEl.classList.remove("crt-on");
+
+  // Add watermark
+  const watermark = document.createElement("div");
+  watermark.className = "export-watermark";
+  watermark.textContent = "https://zecstats.info";
+  node.style.position = "relative";
+  node.appendChild(watermark);
+
+  try {
+    const dataUrl = await toPng(node, {
+      backgroundColor: "#000000",
+      pixelRatio: 2,
+      style: {
+        // Override any clamp/overflow so the full content is captured
+        overflow: "visible",
+        height: "auto",
+      },
+    });
+
+    const link = document.createElement("a");
+    link.download = `${filename}.png`;
+    link.href = dataUrl;
+    link.click();
+  } catch (err) {
+    console.error("PNG export failed:", err);
+  } finally {
+    // Remove watermark and restore CRT
+    watermark.remove();
+    if (hadCrt) appEl.classList.add("crt-on");
+  }
+}
+
+/* ─── Export button component ─── */
+function ExportBtn({ targetRef, filename, appRef, label = "Export" }) {
+  const [busy, setBusy] = useState(false);
+
+  const handleClick = useCallback(async () => {
+    if (busy) return;
+    setBusy(true);
+    await exportToPng(targetRef.current, filename, appRef.current);
+    setBusy(false);
+  }, [targetRef, filename, appRef, busy]);
+
+  return (
+    <button
+      type="button"
+      className={`export-btn${busy ? " is-busy" : ""}`}
+      onClick={handleClick}
+      title={label}
+      aria-label={label}
+    >
+      <FiCamera size={14} />
+    </button>
+  );
+}
+
+/* ─── Card components ─── */
+function PriceCard({ data, cardRef, appRef }) {
   const price = data?.priceUsd;
   const chg = data?.priceChange24h;
   const lowUsd = data?.priceLow24hUsd;
@@ -113,7 +179,8 @@ function PriceCard({ data }) {
     : "";
 
   return (
-    <section className="card price-card">
+    <section className="card price-card" ref={cardRef}>
+      <ExportBtn targetRef={cardRef} filename="zecstats-price" appRef={appRef} label="Export price data" />
       <div className="stat-block">
         <div className="label">ZEC / USD</div>
         <div className="value-row">
@@ -166,7 +233,7 @@ function PriceCard({ data }) {
   );
 }
 
-function PoolsCard({ data }) {
+function PoolsCard({ data, cardRef, appRef }) {
   const vp = data?.valuePools ?? {};
   const shielded = vp?.shielded;
   // const sprout = vp?.sprout;
@@ -186,7 +253,8 @@ function PoolsCard({ data }) {
     : null;
 
   return (
-    <section className="card pools-card">
+    <section className="card pools-card" ref={cardRef}>
+      <ExportBtn targetRef={cardRef} filename="zecstats-supply" appRef={appRef} label="Export supply data" />
       <div className="stat-block">
         <div className="label highlight">Circulating Supply:</div>
         <div className="highlight-supply">
@@ -221,7 +289,7 @@ function PoolsCard({ data }) {
   );
 }
 
-function LockboxCard({ data }) {
+function LockboxCard({ data, cardRef, appRef }) {
   const vp = data?.valuePools ?? {};
   const lockbox = vp?.lockbox;
   const treasury = lockbox * data?.priceUsd;
@@ -271,7 +339,8 @@ function LockboxCard({ data }) {
   });
 
   return (
-    <section className="card">
+    <section className="card" ref={cardRef}>
+      <ExportBtn targetRef={cardRef} filename="zecstats-lockbox" appRef={appRef} label="Export lockbox data" />
       <div className="holdings-grid">
         {normalizedHoldings.map((h) => (
           <div className="stat-block" key={h.label}>
@@ -305,9 +374,10 @@ function LockboxCard({ data }) {
   );
 }
 
-function HeightCard({ data }) {
+function HeightCard({ data, cardRef, appRef }) {
   return (
-    <section className="card">
+    <section className="card" ref={cardRef}>
+      <ExportBtn targetRef={cardRef} filename="zecstats-chain" appRef={appRef} label="Export chain data" />
       <div className="stat-block">
         <div className="label">Block Height</div>
         <div className="value main-number">
@@ -332,6 +402,14 @@ export default function App() {
   const now = useClock();
   const { data } = useStatus();
   const [crtEnabled, setCrtEnabled] = useState(true);
+  const [exportingAll, setExportingAll] = useState(false);
+
+  const appRef = useRef(null);
+  const layoutRef = useRef(null);
+  const priceRef = useRef(null);
+  const poolsRef = useRef(null);
+  const lockboxRef = useRef(null);
+  const heightRef = useRef(null);
 
   const timeStr = now.toLocaleTimeString([], {
     hour: "2-digit",
@@ -340,11 +418,28 @@ export default function App() {
 
   const dateStr = now.toLocaleDateString();
 
+  const handleExportAll = useCallback(async () => {
+    if (exportingAll) return;
+    setExportingAll(true);
+    await exportToPng(layoutRef.current, "zecstats-all", appRef.current);
+    setExportingAll(false);
+  }, [exportingAll]);
+
   return (
-    <div className={`app${crtEnabled ? " crt-on" : ""}`}>
+    <div className={`app${crtEnabled ? " crt-on" : ""}`} ref={appRef}>
       <header className="app-header desktop-phone">
         <div className="brand">ZCASH ᙇ <span>PRIVACY IS NORMAL</span></div>
         <div className="header-controls">
+          <button
+            type="button"
+            className={`export-all-btn${exportingAll ? " is-busy" : ""}`}
+            onClick={handleExportAll}
+            title="Export all stats as PNG"
+            aria-label="Export all stats as PNG"
+          >
+            <FiDownload size={14} />
+            <span>Export All</span>
+          </button>
           <button
             type="button"
             className={`crt-toggle${crtEnabled ? " is-active" : ""}`}
@@ -366,16 +461,16 @@ export default function App() {
         </div>
       </header>
 
-      <main className="layout">
+      <main className="layout" ref={layoutRef}>
         <div className="top-grid">
-          <PriceCard data={data} />
-          <PoolsCard data={data} />
+          <PriceCard data={data} cardRef={priceRef} appRef={appRef} />
+          <PoolsCard data={data} cardRef={poolsRef} appRef={appRef} />
         </div>
 
         <div className="bottom-grid">
-          <LockboxCard data={data} />
+          <LockboxCard data={data} cardRef={lockboxRef} appRef={appRef} />
           {/* <MempoolCard data={data} /> */}
-          <HeightCard data={data} />
+          <HeightCard data={data} cardRef={heightRef} appRef={appRef} />
         </div>
       </main>
     </div>

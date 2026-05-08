@@ -957,4 +957,127 @@ body {
     box-shadow: 0 0 30px rgba(244, 197, 66, 0.15);
     border-color: rgba(244, 197, 66, 0.3);
   }
+
+  .card:hover > .export-btn {
+    opacity: 0.55;
+  }
+}
+
+/* ─── Per-card export button ─── */
+.card {
+  position: relative;
+}
+
+.export-btn {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--fg);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.25s, border-color 0.2s, box-shadow 0.2s,
+    background 0.2s, transform 0.15s;
+}
+
+.export-btn:hover {
+  opacity: 1 !important;
+  border-color: rgba(244, 197, 66, 0.55);
+  box-shadow: 0 0 12px rgba(244, 197, 66, 0.25);
+  color: var(--accent);
+  background: rgba(244, 197, 66, 0.1);
+  transform: scale(1.1);
+}
+
+.export-btn:active {
+  transform: scale(0.95);
+}
+
+.export-btn.is-busy {
+  opacity: 0.4 !important;
+  pointer-events: none;
+  animation: pulse-busy 0.8s ease-in-out infinite;
+}
+
+/* ─── Export All button (header) ─── */
+.export-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem 0.35rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(12, 12, 12, 0.85);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: clamp(0.65rem, 0.9vw, 0.9rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.export-all-btn:hover {
+  border-color: rgba(244, 197, 66, 0.6);
+  color: var(--accent);
+  background: rgba(244, 197, 66, 0.12);
+  box-shadow: 0 0 14px rgba(244, 197, 66, 0.15);
+}
+
+.export-all-btn:active {
+  transform: scale(0.97);
+}
+
+.export-all-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.export-all-btn.is-busy {
+  opacity: 0.5;
+  pointer-events: none;
+  animation: pulse-busy 0.8s ease-in-out infinite;
+}
+
+@keyframes pulse-busy {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.65; }
+}
+
+/* ─── PNG watermark (injected during export) ─── */
+.export-watermark {
+  position: absolute;
+  bottom: 0.6rem;
+  right: 0.85rem;
+  font-family: "Share Tech Mono", ui-monospace, SFMono-Regular, Menlo,
+    Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(244, 197, 66, 0.55);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 100;
+}
+
+/* ─── Mobile: always show export buttons ─── */
+@media (max-width: 600px) {
+  .export-btn {
+    opacity: 0.4;
+    width: 26px;
+    height: 26px;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .export-all-btn {
+    display: none;
+  }
 }
