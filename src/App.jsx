@@ -103,12 +103,18 @@ async function exportToPng(node, filename, appEl) {
   const hadCrt = appEl?.classList.contains("crt-on");
   if (hadCrt) appEl.classList.remove("crt-on");
 
-  // Add large faint watermark text
+  // Add large faint watermark text — size adapts to container
   const watermark = document.createElement("div");
   watermark.className = "export-watermark";
   watermark.textContent = "https://zecstats.info";
   node.style.position = "relative";
   node.appendChild(watermark);
+
+  // Dynamically size the watermark to ~85% of the container width
+  const nodeWidth = node.offsetWidth;
+  const charCount = watermark.textContent.length;
+  const dynamicSize = Math.max(14, Math.min(72, (nodeWidth * 0.85) / (charCount * 0.62)));
+  watermark.style.fontSize = `${dynamicSize}px`;
 
   // Add Zcash logo at bottom-right
   const logo = document.createElement("img");
