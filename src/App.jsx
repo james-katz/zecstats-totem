@@ -113,7 +113,7 @@ async function exportToPng(node, filename, appEl) {
   // Dynamically size the watermark to ~85% of the container width
   const nodeWidth = node.offsetWidth;
   const charCount = watermark.textContent.length;
-  const dynamicSize = Math.max(14, Math.min(72, (nodeWidth * 0.85) / (charCount * 0.62)));
+  const dynamicSize = Math.max(14, Math.min(72, (nodeWidth * 0.85) / (charCount * 0.75)));
   watermark.style.fontSize = `${dynamicSize}px`;
 
   // Add Zcash logo at bottom-right
