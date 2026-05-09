@@ -103,12 +103,25 @@ async function exportToPng(node, filename, appEl) {
   const hadCrt = appEl?.classList.contains("crt-on");
   if (hadCrt) appEl.classList.remove("crt-on");
 
-  // Add watermark
+  // Add large faint watermark text
   const watermark = document.createElement("div");
   watermark.className = "export-watermark";
   watermark.textContent = "https://zecstats.info";
   node.style.position = "relative";
   node.appendChild(watermark);
+
+  // Add Zcash logo at bottom-right
+  const logo = document.createElement("img");
+  logo.src = new URL("/Primary Logo White Yellow.png", window.location.origin).href;
+  logo.className = "export-logo";
+  node.appendChild(logo);
+
+  // Wait for logo to load before capturing
+  await new Promise((resolve) => {
+    if (logo.complete) return resolve();
+    logo.onload = resolve;
+    logo.onerror = resolve;
+  });
 
   try {
     const dataUrl = await toPng(node, {
@@ -128,8 +141,9 @@ async function exportToPng(node, filename, appEl) {
   } catch (err) {
     console.error("PNG export failed:", err);
   } finally {
-    // Remove watermark and restore CRT
+    // Remove injected elements and restore CRT
     watermark.remove();
+    logo.remove();
     if (hadCrt) appEl.classList.add("crt-on");
   }
 }
